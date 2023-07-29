@@ -1,0 +1,92 @@
+// src/main.tsx ->
+
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+
+// src/App.tsx ->
+
+import { useEffect, useState } from "react";
+import "./App.css";
+import io, { Socket } from "socket.io-client";
+import MessageInput from "./MessageInput";
+import Messages from "./Messages";
+
+function App() {
+  const [socket, setSocket] = useState<Socket>();
+  const [messages, setMessages] = useState<string[]>([]);
+
+  const send = (value: string) => {
+    socket?.emit("message", value);
+  };
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:8001");
+    setSocket(newSocket);
+  }, [setSocket]);
+
+  // whenever we meet an event called message from our gateway this function will
+  // be run
+  const messageListener = (message: string) => {
+    setMessages([...messages, message]);
+  };
+
+  useEffect(() => {
+    socket?.on("message", messageListener);
+    return () => {
+      socket?.off("message", messageListener);
+    };
+  }, [messageListener]);
+
+  // when the MessageInput button is clicked
+  return (
+    <>
+      {" "}
+      <MessageInput send={send} />
+      <Messages messages={messages} />
+    </>
+  );
+}
+
+export default App;
+
+// src/MessagesInput.tsx ->
+
+import { useState } from "react";
+
+export default function MessagesInput({
+  send,
+}: {
+  send: (val: string) => void;
+}) {
+  const [value, setValue] = useState("");
+  return (
+    <>
+      <input
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Type your message..."
+        value={value}
+      />
+      <button onClick={() => send(value)}>Send</button>
+    </>
+  );
+}
+
+// src/Messages.tsx ->
+
+export default function Messages({ messages }: { messages: string[] }) {
+  return (
+    <div>
+      {messages.map((messages, index) => (
+        <div key={index}>{messages}</div>
+      ))}
+    </div>
+  );
+}
