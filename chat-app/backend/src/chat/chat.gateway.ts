@@ -5,6 +5,16 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 
+// TODO dynamic socket port
+//
+// Cause this does not work outside class function:
+//  const port = process.env.PORT;
+//  console.log("chat.gateway.ts: port = " + port);
+//
+// https://stackoverflow.com/questions/69435506/how-to-pass-a-dynamic-port-to-the-websockets-gateway-in-nestjs
+// https://dev.to/one-beyond/how-to-configure-and-use-environment-variables-in-nestjs-3cm2
+// https://progressivecoder.com/one-stop-guide-to-nestjs-config-environment-variables/
+
 @WebSocketGateway(8001, { cors: '*' })
 // we pass @WebSocketGateway a Port number, cors: '*' means that we want every
 // frontend clients to be able to connect with our gateway.

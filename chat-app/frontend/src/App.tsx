@@ -47,7 +47,8 @@ function App() {
 
   // useEffect hook to create the socket connection when the component mounts
   useEffect(() => {
-    const newSocket = io("http://localhost:8001"); // establishes new socket connection
+    // TODO process.env.REACT_APP_SOCKET || 'http://localhost:8001';
+    const newSocket = io("http://192.168.150.10:8001"); // establishes new socket connection
     setSocket(newSocket); // update 'socket' state
   }, [setSocket]);
 
